@@ -187,3 +187,90 @@ if (인증성공) {
 } else {
     에러 메시지 표시
 }
+
+-----------------
+게임 화면 표시 후 서버에서 보내야 하는 필수 패킷들:
+
+맵 정보 패킷들:
+
+SMapSizePacket - 맵 크기 정보
+SMapCRCPacket - 맵 데이터 무결성 체크
+SMapStatusPacket - 맵 상태 정보
+
+
+플레이어 캐릭터 정보:
+
+SPutHumanObjectPacket - 플레이어 캐릭터 배치
+
+
+인벤토리 및 장비 정보:
+
+SAddInventoryPacket - 인벤토리 아이템들
+SAddEquipmentPacket - 장착한 장비들
+
+
+스킬 및 마법 정보:
+
+SAddActionPacket - 보유 스킬/액션들
+SAddLastingSpellPacket - 지속 효과 마법들
+
+
+다른 플레이어 및 오브젝트:
+
+SAddUserPacket - 주변 다른 플레이어들
+기타 게임 오브젝트들
+
+
+
+전송 순서:
+1. 맵 정보 패킷들 (게임 월드 준비)
+2. 플레이어 캐릭터 정보 (자신의 상태)
+3. 인벤토리/장비 정보 (소유 아이템들)
+4. 스킬/마법 정보 (능력치)
+5. 주변 환경 정보 (다른 플레이어, 오브젝트)
+이 패킷들이 모두 전송되어야 클라이언트에서 완전한 게임 화면을 표시하고 플레이할 수 있습니다.
+
+1. CTransferServerPacket(인증토큰) 수신
+2. 토큰 검증 성공
+3. SCheckPacket(0) 전송 → InitializeGameWorld() 호출
+4. 즉시 연속으로 필수 패킷들 전송:
+   - SMapSizePacket
+   - SMapCRCPacket  
+   - SPutHumanObjectPacket
+   - SAddInventoryPacket (여러 개)
+   - SAddEquipmentPacket (여러 개)
+   - SAddActionPacket (여러 개)
+   - SAddUserPacket (주변 플레이어들)
+   - 기타 게임 상태 패킷들
+
+   ------------------------
+
+   게임 초기화 완료 후 서버에서 자동 전송:
+
+1. SMapCRCPacket (0x14)
+   └─ 맵 파일 무결성 확인
+
+2. SMapSizePacket (0x15) 
+   └─ 맵 크기 및 기본 정보
+
+3. SFieldMapPacket (0x2e)
+   └─ 필드 맵 상세 정보 (지형, 오브젝트 등)
+
+4. SPutHumanObjectPacket (0x33)
+   └─ 플레이어 초기 위치 및 상태
+   └─ X, Y 좌표, 방향, HP/MP 등
+
+5. 기타 초기화 패킷들
+   └─ SAddInventoryPacket (인벤토리)
+   └─ SAddEquipmentPacket (장비)
+   └─ SAddActionPacket (스킬)
+   └─ SAddUserPacket (주변 플레이어)
+
+   
+  접속 후
+**패킷 전송 시점:**
+- ✅ **사용자 입력 시**: 이동, 공격, 아이템 사용 등
+- ✅ **게임 이벤트 시**: 다른 플레이어 행동, 서버 이벤트 등
+- ❌ **자동/주기적 전송**: 찾을 수 없음
+
+따라서 **완전히 idle 상태에서는 패킷 전송이 없고**, 사용자가 행동을 취할 때만 해당 패킷이 전송됩니다.
