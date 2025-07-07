@@ -12,4 +12,4 @@ cd /d "%~dp0"
 echo currunt path: %CD%
 
 :: 4001=> patch?? 20001 => server??
-python packet_redirect_v3.py 210.101.85.171 20001 192.168.0.16 1510
+python packet_redirect_v3.py 210.101.85.171 20001 192.168.0.15 1510
