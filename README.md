@@ -286,3 +286,130 @@ SAddUserPacket - 주변 다른 플레이어들
 - ❌ **자동/주기적 전송**: 찾을 수 없음
 
 따라서 **완전히 idle 상태에서는 패킷 전송이 없고**, 사용자가 행동을 취할 때만 해당 패킷이 전송됩니다.
+
+---
+패킷 구조 검증 위치: HandleIncomingTCPIPPacket (0x0052b640)
+1. 패킷 헤더 검증
+c// 패킷 시작 바이트 검증 (0xAA = -0x56)
+if ((char)local_4 == -0x56) {
+    *(undefined4 *)((int)param_1 + 0xc098) = 1;  // 패킷 상태 플래그 설정
+    *(undefined4 *)((int)param_1 + 0xc09c) = 0;  // 읽기 카운터 초기화
+    *(undefined4 *)((int)param_1 + 0xc0a0) = 0;  // 패킷 길이 초기화
+}
+2. 패킷 길이 검증
+celse if (iVar1 == 0) {
+    // 패킷 길이의 상위 바이트
+    *(uint *)((int)param_1 + 0xc0a0) = 
+         *(uint *)((int)param_1 + 0xc0a0) | (local_4 & 0xff) << 8;
+}
+else if (iVar1 == 1) {
+    // 패킷 길이의 하위 바이트
+    *(uint *)((int)param_1 + 0xc0a0) = 
+         *(uint *)((int)param_1 + 0xc0a0) | local_4 & 0xff;
+}
+3. 패킷 완성도 검증
+cif (iVar1 + -1 == *(int *)((int)param_1 + 0xc0a0)) {
+    // 패킷 데이터가 모두 수신되었는지 확인
+    *(undefined1 *)(*(int *)((int)param_1 + 0xc0a0) + 0x8098 + (int)param_1) = 0;
+4. 패킷 타입 검증 및 생성
+cif (((0 < iVar1) && (pbVar5 = (byte *)((int)param_1 + 0x8098), pbVar5 != (byte *)0x0)) &&
+   (pSVar3 = (SPacket *)PacketFactory::CreateSPacketFromCode(DAT_00626db4,(uint)*pbVar5),
+    pSVar3 != (SPacket *)0x0)) {
+5. 패킷 디코딩 및 검증
+cpbVar5[iVar1] = 0;  // NULL 종료 문자 추가
+iVar1 = SPacket::Decode(pSVar3,pbVar5,iVar1);  // 패킷 구조 디코딩
+if (iVar1 != 0) {
+    // 디코딩 성공 시 메시지 큐로 전달
+    (*UNIPostMessage)(uVar2,uVar6,pSVar3,uVar7);
+}
+핵심 검증 순서:
+
+헤더 바이트 검증 (0xAA)
+패킷 길이 검증 (2바이트)
+패킷 완성도 확인
+패킷 타입 검증 (첫 번째 데이터 바이트)
+구조 디코딩 검증 (SPacket::Decode)
+
+이 함수가 모든 패킷이 개별 처리 함수로 분산되기 전에 공통적으로 거치는 구조 검증 지점입니다!
+
+
+우선 어디에서 CMultiServerPacket::CMultiServerPacket를 날린지 확인해볼것
+ProcessMetaData 
+어느 시점에 패널이 바뀌면서 해당 패킷이 처리가 안되는 것으로 보임.
+이에 따라 서버파일을 직접 작성하는것으로 방향을 바꿈.
+서버파일은 설치경로\RData\Server.dat임
+(설치경로\Server.dat로 해도되지만 한번 실행하고나면 저 위지로 옮겨짐)
+1 byte(server count)
+1 byte(server type 0x00 ->pk 0x01 ->npk)
+4 byte(Server id)
+2 byte(server port)
+1 byte(server status 0x00->online, 0x01->offline, 0x02 ->maintenance)
+len 1 bytes + string n*2 bytes(max 255*2) (server name)
+len 1 bytes + string n*2 bytes(max 255*2) (server ip)
+len 1 bytes + string n*2 bytes(max 255*2) (server desc)
+len 2 bytes + string n*2 bytes(max 65535) (server additional info[connected user?, chnnel info?])
+
+[서버 정보 섹션]                                            │
+│   - 총 서버 개수: 1바이트 (최대 8개)                       │
+├─────────────────────────────────────────────────────────────┤
+│ [PK 모드 서버들] (최대 4개)                                 │
+│   └ 서버1:                                                  │
+│     - 서버 타입: 1바이트 (0x00 = PK 모드)                  │
+│     - 서버 ID: 4바이트                                      │
+│     - 포트 번호: 2바이트                                    │
+│     - 서버 상태: 1바이트 (온라인/오프라인/점검중)           │
+│     - 서버 이름 길이: 1바이트                               │
+│     - 서버 이름: 가변길이 (유니코드, 즉 길이*2)                        │
+│     - 서버 IP 길이: 1바이트                                 │
+│     - 서버 IP: 가변길이 (유니코드, 즉 길이*2)                          │
+│     - 서버 설명 길이: 1바이트                               │
+│     - 서버 설명: 가변길이 (유니코드, 즉 길이*2)                        │
+│     - 추가 정보 길이: 2바이트                               │
+│     - 추가 정보: 가변길이 , 즉 길이*2(접속자 수, 채널 정보 등)         │
+│   └ 서버2: (동일 구조)                                      │
+│   └ 서버3: (동일 구조)                                      │
+│   └ 서버4: (동일 구조)                           
+
+==============================
+실제 데이터 수정해서 확인해본 결과 정리중
+서버타입에서 0x00은 NPK 서버, 0x01은 PK서버 그룹에 할당됨.
+
+서버 상태: 이걸 0x00으로 하니 디아크리노가, 0x01로 하니 아인소프가 나왔다.
+즉, PK 서버중 몇번째 껄로 표시하려면 0x01, NPK중 몇번째껄로 하려면 0x00임.
+
+
+
+1. 파일 헤더:
+
+1바이트: 서버 개수 (firstByte = Decoder::Decode1())
+
+2. 각 서버 엔트리 (서버 개수만큼 반복):
+
+1바이트: 서버 타입/ID (Decoder::Decode1())
+0x01 : pk서버 그룹
+
+4바이트: 서버 IP 주소 (Decoder::Decode4())
+?InitializeNetworkScanner와 SendPing에서 확인가능하다고함.
+
+2바이트: 서버 포트 번호 (Decoder::Decode2())
+?InitializeNetworkScanner와 SendPing에서 확인가능하다고함.
+
+1바이트: 추가 플래그/상태 (Decoder::Decode1())
+UI그룹(0x01 => pk서버 UI에서 선택됨)
+
+문자열 1: 서버 이름 (DecodeString1, 최대 255자)
+04 C4 CE 74 C7 24 B1 78 C7
+("케이네인")=> 이거는 아직 확인이 안됨
+
+문자열 2: 서버 주소/IP (DecodeString1, 최대 255자)
+=>유니코드가 맞으며 우측상단 서버 설명 부분에 한글로 표시되는 영역(=UTF-16LE로 인코딩)
+=>원래는 PK 서버 입니다 등의 설명이 나옴
+06 4C D1 A4 C2 B8 D2 20 00 1C C1 84 BC
+("테스트 서버")
+
+문자열 3: 서버 설명 (DecodeString1, 최대 255자)
+04 C4 CE 74 C7 24 B1 78 C7
+("케이네인")=> 우측상단 서버 설명 부분 위쪽에 출력됨을 확인함(원래는 오픈일자)
+
+문자열 4: 확장 정보 (DecodeString2, 최대 65535자)
+???
