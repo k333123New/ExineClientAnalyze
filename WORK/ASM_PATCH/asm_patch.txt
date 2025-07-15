@@ -15,5 +15,99 @@
 0052b8d1 val 74 14 => EB 14
 JZ 0x0052b8e7 => JMP 0x0052b8e7 (확인중)
 
+
 3)서버쪽 파이썬 코드 수정
 
+
+4)임시 파일명은 랜덤함수를 이용해서 .\temp\tempxxxx파일로 생성해서 사용한다.(올리디버거에서 와쳐 걸고 브레이크 포인트 걸어서 확인함. 창모드는 dxwnd에 풀스크린온리로함)
+이를 막기위해서 srand에 시드값이 타임으로 들어가는 것을 각각에 고정 시드값을 주면 될듯함.
+
+00414c8e주소 
+CALL 0x0059ee77 (e8 e4 a1 18 00)  to  MOV EAX, 00    (B8 00 00 00 00)
+
+0044758a주소
+MOVSX EAX,AX (0f bf c0)
+기존: 0F BF C0  (MOVSX EAX,AX)
+패치: 6A 01 58  (PUSH 1; POP EAX)
+결과: EAX = 1
+
+00447763주소
+MOVSX EAX,AX (0f bf c0)
+기존: 0F BF C0  (MOVSX EAX,AX)
+패치: 6A 02 58  (PUSH 2; POP EAX)
+결과: EAX = 2
+
+0051a87d주소 
+CALL 0x0059ee77 (e8 e4 a1 18 00)  to  MOV EAX, 03    (B8 03 00 00 00)
+
+0051a89c주소
+CALL 0x0050f700 (e8 5f 4e ff ff) to  MOV EAX, 04    (B8 04 00 00 00)
+=>수정은 했으나 파일명 쪽에는 안됨>
+
+
+----------------------------
+위의 방법으로 안되서 파일명을 랜덤에서가 아니라 별도의 함수를 만들어서 1씩 증가해서 받는걸로 변경함
+004b0dd9
+기존: E8 7C 07 0F 00     (CALL _rand)  
+패치: E8 XX XX XX XX     (CALL 0x00401012 특별한함수)
+
+00401012 에 다음을 추가(.text에 추가)
+A1 D4 6C 62 00          ; MOV EAX,[0x626CD4] - 현재 카운터 값 로드
+FF 05 D4 6C 62 00       ; INC dword ptr [0x626CD4] - 카운터 증가
+C3                      ; RET - 돌아가기
+
+0x626CD4는 (.data에서 안쓰는 영역확인해서 처리한것임)
+----------------------------
+
+
+
+64dbg로 확인
+1. 004b07b0 (함수 시작) → 다운로드할 파일명 확인
+   Watch: ESP+0x624,s
+
+1. 004b07b0 (DownloadMetaDataFromServer 시작)
+   → Watch: ESP+4,s (다운로드 파일명)
+
+2. 004b084e (swprintf 호출 후) → 로컬 temp 경로 확인  
+   Watch: ESP+0x21C,s
+
+2. 0054c560 (InternetOpenUrlA)  
+   → Watch: ESP+8,s (다운로드 URL)
+
+3. 004b086d (UNICreateFile 호출) → 로컬 파일 생성 경로 확인
+   → Watch: ESP+4,s (로컬 저장 경로)
+아스키로 설정, 변경됨으로 설정
+
+
+
+랜덤값 고정 패치 지점
+앞서 찾은 004b0dd9에서 CALL 0x0059ea5a (rand 호출)를 패치하면:
+assembly기존: E8 7C 07 0F 00  (CALL _rand)  
+패치: B8 34 12 00 00  (MOV EAX, 1234)
+이렇게 하면 항상 temp1234 파일이 생성되어 DownloadMetaDataFromServer에서 사용됩니다!
+
+
+사용가능한 data 빈공간 주소
+추천 카운터 주소들
+0x626cd4 (4바이트 빈 공간)
+0x626cd0 (사용됨)
+0x626cd4 ← 사용 가능 (4바이트)
+0x626cd8 ← 사용 가능 (4바이트)  
+0x626cdc ← 사용 가능 (4바이트)
+0x626ce0 ← 사용 가능 (4바이트)
+0x626ce4 ← 사용 가능 (4바이트)
+0x626ce8 (사용됨)
+0x626cfc (4바이트 빈 공간)
+0x626cf8 (사용됨)
+0x626cfc ← 사용 가능 (4바이트)
+가장 안전한 선택: 0x626cd4
+assembly기존: B8 07 00 00 00     (MOV EAX, 0x07)
+패치: A1 D4 6C 62 00     (MOV EAX, [626CD4h])
+그리고 카운터 증가는 함수 시작이나 끝에서:
+assemblyFF 05 D4 6C 62 00       (INC dword ptr [626CD4h])
+0x626CD4 주소를 카운터로 사용하는 것을 추천합니다! 이 주소는 사용되는 전역 변수들 사이의 안전한 빈 공간입니다.
+ ===============
+
+
+ temp\\temp02281004 (fix!!!) -> using ProcessTempFiles
+ temp\\temp0, temp\\temp1, ... (custom patch!)

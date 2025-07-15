@@ -413,3 +413,23 @@ UI그룹(0x01 => pk서버 UI에서 선택됨)
 
 문자열 4: 확장 정보 (DecodeString2, 최대 65535자)
 ???
+
+
+----
+MainMenuPane::HandleButtonEvent?에서 서버 선택 버튼이나 오케이 버튼등의 이벤트핸들링을 하는듯
+
+
+포맷 문자열: "%s%s_%02d.dat"
+매개변수들:
+
+첫 번째 %s: 게임 실행 경로 (GetApplicationPath_ 결과)
+두 번째 %s: 서버 관련 접두사 (아마도 "Server" 또는 "Character")
+%02d: 서버 ID 번호 (2자리 숫자, 예: 01, 02, 03...)
+
+
+Config::Config 설정 정보 읽기 과정
+1. 기본 설정 초기화 (Config::InitConfig_)
+cpp// 기본값 설정
+param_1[0x85] = 0;         // 폰트 설정
+param_1[0x86] = 1;         // 전체화면 모드 (기본값: 1=전체화면)
+param_1[2] = languageType; // 언어 설정
