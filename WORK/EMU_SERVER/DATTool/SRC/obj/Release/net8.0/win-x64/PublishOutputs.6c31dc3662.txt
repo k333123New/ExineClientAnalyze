@@ -1,0 +1,5 @@
+D:\ExinePrivateServer\Tools\DATTool\SRC\bin\Release\net8.0\win-x64\publish\DATTool.exe
+D:\ExinePrivateServer\Tools\DATTool\SRC\bin\Release\net8.0\win-x64\publish\DATTool.dll
+D:\ExinePrivateServer\Tools\DATTool\SRC\bin\Release\net8.0\win-x64\publish\DATTool.deps.json
+D:\ExinePrivateServer\Tools\DATTool\SRC\bin\Release\net8.0\win-x64\publish\DATTool.runtimeconfig.json
+D:\ExinePrivateServer\Tools\DATTool\SRC\bin\Release\net8.0\win-x64\publish\DATTool.pdb
