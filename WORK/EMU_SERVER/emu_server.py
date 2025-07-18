@@ -250,9 +250,11 @@ def create_server():
                         client_socket.sendall(response)
                         print("CMetaDataPacket Type 1 0x32,0x32,0x32 서버응답을 보냈습니다.")
                         
+                        
+                        
                     #aa 00 02 57 01 CMultiServerPacket
                     elif recv_packet == bytes([0xaa,0x00,0x02,0x57,0x01]):
-                        print("CMultiServerPacket 요청이 들어옴")
+                        print("CMultiServerPacket 1 요청이 들어옴")
                         
                         ##14 + 16*27
                         ##0x01, 0x25 or 0x01, 0xBE?
@@ -295,6 +297,27 @@ def create_server():
                         0xAA, 0x00, 0x02, 0x56, 0x00
                         ])
                         print("CMultiServerPacket 서버정보 데이터를 서버응답으로 보냈습니다.")
+                        
+                    #aa0003570001
+                    elif recv_packet == bytes([0xaa,0x00,0x03,0x57,0x00,0x01]):
+                        print("CMultiServerPacket 2 요청이 들어옴")
+                        
+                        #server.dat data to packet
+                        response = bytes([
+                        0xAA, 0x00, 0x2D, 0x56 , 
+                        0x01, 0x01 ,0x0F ,0x00 ,
+                        0xA8 ,0xC0 ,0x05 ,0xE6 ,
+                        0x01 ,0x04 ,0xC4 ,0xCE ,
+                        0x74 ,0xC7 ,0x24 ,0xB1 ,
+                        0x78 ,0xC7 ,0x06 ,0x4C ,
+                        0xD1 ,0xA4 ,0xC2 ,0xB8 ,
+                        0xD2 ,0x20 ,0x00 ,0x1C ,
+                        0xC1 ,0x84 ,0xBC ,0x04 ,
+                        0xC4 ,0xCE ,0x74 ,0xC7 ,
+                        0x24 ,0xB1 ,0x78 ,0xC7 ,
+                        0x00 ,0x01 ,0x0A ,0x0A ,
+                        ])
+                        print("CMultiServerPacket2 데이터를 서버응답으로 보냈습니다.")
                         
                         
                     else:
