@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DATTool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b4f11413263e23da99a20449078d059e76dfa5c2")]
 [assembly: System.Reflection.AssemblyProductAttribute("DATTool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DATTool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

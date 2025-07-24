@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = DATTool
-build_property.ProjectDir = D:\ExinePrivateServer\Tools\DATTool\SRC\
+build_property.ProjectDir = D:\ExinePrivateServer\GITHUB\WORK\EMU_SERVER\DATTool\SRC\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

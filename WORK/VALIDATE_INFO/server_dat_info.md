@@ -82,3 +82,7 @@ len 2 bytes + string n*2 bytes(max 65535) (server additional info[connected user
 
 ip정보 정상적으로 맞추고 tcp포트 맞춰서 접속가능해 지면 확인 버튼은 활성화 됨.
 이 상태에서 버튼 누를때 로그인 창으로 넘어갈 수 있도록 어셈 패치 해야함(어셈패치 정보 열어서 확인할것.)
+
+
+
+

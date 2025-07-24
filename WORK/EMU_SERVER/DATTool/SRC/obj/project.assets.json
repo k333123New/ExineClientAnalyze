@@ -1,8 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {},
-    "net8.0/win-x64": {}
+    "net8.0": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
@@ -15,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ExinePrivateServer\\Tools\\DATTool\\SRC\\DATTool.csproj",
+      "projectUniqueName": "D:\\ExinePrivateServer\\GITHUB\\WORK\\EMU_SERVER\\DATTool\\SRC\\DATTool.csproj",
       "projectName": "DATTool",
-      "projectPath": "D:\\ExinePrivateServer\\Tools\\DATTool\\SRC\\DATTool.csproj",
+      "projectPath": "D:\\ExinePrivateServer\\GITHUB\\WORK\\EMU_SERVER\\DATTool\\SRC\\DATTool.csproj",
       "packagesPath": "C:\\Users\\k333123\\.nuget\\packages\\",
-      "outputPath": "D:\\ExinePrivateServer\\Tools\\DATTool\\SRC\\obj\\",
+      "outputPath": "D:\\ExinePrivateServer\\GITHUB\\WORK\\EMU_SERVER\\DATTool\\SRC\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -69,11 +68,6 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x64": {
-        "#import": []
       }
     }
   }
