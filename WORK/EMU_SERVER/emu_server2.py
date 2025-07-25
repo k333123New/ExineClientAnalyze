@@ -99,29 +99,253 @@ def create_server():
                         print("SBadGuyPacket 데이터를 서버응답으로 보냈습니다.(mainmenupane test)")
                         '''
                         
-                        #OK(Reach To MapPane!!!)
-                        #SUserPositionPacket	0x04
+                        #----------------MapPane----------------
+                         
+                        #ProcessUserAppearance? 0x05
+                        #OK!!!(UI Apply! pos:555,555)
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x1D, 
+                        0x05,
+                        0x00, 0x00, 0x00, 0x00,
+                        0x00,
+                        0x00,
+                        0x00, 0x00, 
+                        0x00, 0x00, 
+                        0x00, 0x00, 
+                        0x00, 0x00, 
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x11,
+                        
+                        0x00,
+                        0x00,
+                        0x00,
+                        
+                        0x00, 0x00, 
+                        
+                        0x00
+                        ])
+                        client_socket.sendall(response)
+                        print("SUserAppearance 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                        #ProcessMessage? 0x0A
+                        #OK!!!
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x0E, 
+                        0x0A,
+                        0x01, 
+                        0x01,  
+                        #0X00, 0x04, 0x4C ,0xD1 ,0xA4 ,0xC2 ,0xB8 ,0xD2 ,0xF5 ,0xB9 #EUC-KR (또는 CP949)!!!
+                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6 #EUC-KR!!!, len : real bytes
+                        ])
+                        client_socket.sendall(response)
+                        print("SMessagePacket 데이터를 서버응답으로 보냈습니다.")
+                        
+                       
+                        
+                        #ProcessSay? 0x0D
+                        #OK!!!(UI Apply! chatdialog! sometext)
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x12, 
+                        0x0D, 
+                        0x01, 
+                        0x01,0x01,0x01,0x01,
+                        0x01,
+                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6 #EUC-KR!!!, len : real bytes
+                        ])
+                        client_socket.sendall(response)
+                        print("SMessagePacket 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                       
+                        #ProcessMapSize? 0x15
+                        #OK! minimap -> some name
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x15, 
+                        0x15, 
+                        
+                        0x00,0x01, #10000 arke
+                        0x00,0x00, #not used
+                        0x00,0x00, #not used
+                        0x0A,#00001010 → 0x0A (bit flag)
+                        0x01,
+                        0x01, 
+                        #c7 ec b1 d7 b3 d7 c0 cc be c6 (헤그네이아) https://dencode.com/
+                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6 #EUC-KR!!!, len : real bytes
+                         
+                        ])
+                        client_socket.sendall(response)
+                        print("SMapSize 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                        
+                        #ProcessMapCRC? 0x14 
+                        #OK! 0x03 => 잘못된 파일 이름입니다. & 종료
+                        #순서!!! (ProcessMapSize -> ProcessMapCRC, 0x01 OK)
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x02, 
+                        0x14, 
+                        0x01,
+                        #0x03,
+                        ])
+                        client_socket.sendall(response)
+                        print("SMapCRC 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                        #ProcessPlaySound? 0x19 
+                        #OK!!! Perfect!
+                        #00001_arke~00014 mp3
+                        #00000 ~ 00389.wav
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x04, 
+                        0x19,
+                        
+                        0x01, #type 0x00 => wav(decode2), 0x01 => bgm(decode1, decode1)
+                        0x01, #file number(mode:bgm)
+                        0x01  #loop?(mode:bgm)
+                        ])
+                        client_socket.sendall(response)
+                        print("SPlaySound 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                        #ProcessChangeHour?? 0x20
+                        #OK!!! Perfect!!! (minimap time display)
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x03, 
+                        0x20,
+                        0x09, #hour
+                        0x0B #min
+                        ])
+                        client_socket.sendall(response)
+                        print("SChangeHour 데이터를 서버응답으로 보냈습니다.")
+                        
+                        
+                        
+                        #ProcessRemoveObjects? E
+                        
+                        #ProcessAddInventory? F
+                        
+                        #ProcessRemoveInventory? 0x10
+                        
+                        #ProcessChangeDirection? 0x11
+                        
+                        #ProcessUseActionEnd? 0x12
+                        
+                        #ProcessDamageEffect? 0x13
+                         
+                        #ProcessMove? 0x0B
+                        
+                        #ProcessMoveObject? 0x0C
+                        
+                        
+                        #ProcessMetaData?? 0x18
+                        
+                        
+                        
+                        #ProcessMotion?? 0x1a
+                        
+                        '''
+                        #ProcessStatus? 0x08 
+                        #ERR! maybe order?
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x1E, 
+                        0x08,
+                        0x00, 0x40,
+                        
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00, 0x00, 0x00, 0x00,
+                        0x04, 0x4C ,0xD1 ,0xA4 ,0xC2 ,0xB8 ,0xD2 ,0xF5 ,0xB9,
+                        0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00,
+                        0x00, 0x00,
+                        0x00,
+                        0x00,
+                        0x00
+                        ])
+                        client_socket.sendall(response)
+                        print("SStatusPacket 데이터(최소)를 서버응답으로 보냈습니다.")
+                        '''
+                        
+                        
+                        '''
+                        #ERR! maybe order?
+                        #ProcessUserPosition	0x04
                         response = bytes([
                         0xAA, 
                         0x00, 0x09, 
-                        0x04, 
-                        0x00, 0x0f, 
-                        0x00, 0x0f,  
-                        0x00, 0x0f, 
-                        0x00, 0x0f
+                        0x04,
+                        0x00, 0x01, 
+                        0x00, 0x01,  
+                        0x00, 0x01, 
+                        0x00, 0x01
                         ])
                         client_socket.sendall(response)
                         print("SUserPositionPacket 데이터를 서버응답으로 보냈습니다.")
+                        '''
                         
-                        #ProcessUserPosition?
+                        #ProcessMoveHumanAck? 0x06
                         
-                        #ProcessUserAppearance?
+                        #ProcessDrawObjects? 0x07
                         
-                        #FindObjectWithID?
                         
-                        #ProcessDrawObjects?
                         
-                        #ProcessStatus?
+                        
+                        #ProcessEffect?? 0x29
+                        
+                        #ProcessAddLastingSpell?? 0x2c
+                        
+                        #ProcessRemoveLastingSpell?? 0x2d
+                        
+                        #ProcessFieldMap? 0x2e
+                         
+                        #ProcessPutHumanObject?? 0x33
+                        
+                        #ProcessObjectInfoReply?? 0x34
+                        
+                        #ProcessRemoveEquipment? 0x38
+                        
+                        #ProcessUpdateGroupMembers?? 0x3a
+                        
+                        #ProcessRequestCRC?? 0x3b
+                        
+                        #ProcessCancelCastSpell? 0x48
+                        
+                        #ProcessPortrait?? 0x49
+                         
+                        #ProcessBlockClient? 0x51
+                        
+                        #ProcessDieObjects?? 0x5f
+                        
+                        #ProcessAddAction?? 0x62
+                        
+                        #ProcessRemoveAction? 0x63
+                        
+                        #ProcessMovePath? 0x64
+                        
+                        #ProcessCheckTime?? 0x66
+                        
+                        #ProcessPassive? 0x6d
+                        
+                        #ProcessActionRequisite? 0x6f
+                        #----------------MapPane----------------
+                        
+                        
                         
                         
                         
