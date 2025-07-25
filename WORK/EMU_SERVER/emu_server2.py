@@ -101,6 +101,21 @@ def create_server():
                         
                         #----------------MapPane----------------
                          
+                         
+                         
+                        #ProcessPutHumanObject?? 0x33
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x0X, 
+                        0x33, 
+                        0x01,
+                        #0x03,
+                        ])
+                        client_socket.sendall(response)
+                        print("SPutHumanObject 데이터를 서버응답으로 보냈습니다.")
+                         
+                         
+                         
                         #ProcessUserAppearance? 0x05
                         #OK!!!(UI Apply! pos:555,555)
                         response = bytes([
@@ -165,8 +180,7 @@ def create_server():
                         client_socket.sendall(response)
                         print("SMessagePacket 데이터를 서버응답으로 보냈습니다.")
                         
-                        
-                       
+                         
                         #ProcessMapSize? 0x15
                         #OK! minimap -> some name
                         response = bytes([
@@ -174,21 +188,21 @@ def create_server():
                         0x00, 0x15, 
                         0x15, 
                         
-                        0x00,0x01, #10000 arke
+                        #0x00,0x01, #10000 arke
+                        0x27,0x10, #MAP Number! 10000 arke
                         0x00,0x00, #not used
                         0x00,0x00, #not used
                         0x0A,#00001010 → 0x0A (bit flag)
                         0x01,
                         0x01, 
                         #c7 ec b1 d7 b3 d7 c0 cc be c6 (헤그네이아) https://dencode.com/
-                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6 #EUC-KR!!!, len : real bytes
+                        #EUC-KR!!!, len : real bytes Map Name
+                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6 
                          
                         ])
                         client_socket.sendall(response)
                         print("SMapSize 데이터를 서버응답으로 보냈습니다.")
-                        
-                        
-                        
+                         
                         #ProcessMapCRC? 0x14 
                         #OK! 0x03 => 잘못된 파일 이름입니다. & 종료
                         #순서!!! (ProcessMapSize -> ProcessMapCRC, 0x01 OK)
@@ -201,6 +215,20 @@ def create_server():
                         ])
                         client_socket.sendall(response)
                         print("SMapCRC 데이터를 서버응답으로 보냈습니다.")
+                        
+                         #OK! order!!!!!!
+                        #ProcessUserPosition	0x04
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x09, 
+                        0x04,
+                        0x00, 0x01, 
+                        0x00, 0x01,  
+                        0x00, 0x01, 
+                        0x00, 0x01
+                        ])
+                        client_socket.sendall(response)
+                        print("SUserPositionPacket 데이터를 서버응답으로 보냈습니다.")
                         
                         
                         #ProcessPlaySound? 0x19 
@@ -231,7 +259,11 @@ def create_server():
                         ])
                         client_socket.sendall(response)
                         print("SChangeHour 데이터를 서버응답으로 보냈습니다.")
+                         
+                         
                         
+                        
+                         
                         
                         
                         #ProcessRemoveObjects? E
@@ -250,60 +282,42 @@ def create_server():
                         
                         #ProcessMoveObject? 0x0C
                         
-                        
                         #ProcessMetaData?? 0x18
                         
-                        
-                        
                         #ProcessMotion?? 0x1a
+                        
                         
                         '''
                         #ProcessStatus? 0x08 
                         #ERR! maybe order?
                         response = bytes([
                         0xAA, 
-                        0x00, 0x1E, 
+                        0x00, 0x20, 
                         0x08,
+                        
                         0x00, 0x40,
                         
-                        0x00,
-                        0x00,
-                        0x00,
-                        0x00, 0x00, 0x00, 0x00,
-                        0x04, 0x4C ,0xD1 ,0xA4 ,0xC2 ,0xB8 ,0xD2 ,0xF5 ,0xB9,
-                        0x00, 0x00, 0x00, 0x00,
-                        0x00, 0x00,
-                        0x00, 0x00,
-                        0x00,
-                        0x00,
-                        0x00
+                        0x01,
+                        0x01,
+                        0x01,
+                        0x01, 0x00, 0x00, 0x00,
+                        0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6,
+                        0x00, 0x00, 0x00, 0x01,
+                        0x00, 0x01,
+                        0x00, 0x01,
+                        0x01,
+                        0x01,
+                        0x01
                         ])
                         client_socket.sendall(response)
                         print("SStatusPacket 데이터(최소)를 서버응답으로 보냈습니다.")
                         '''
                         
                         
-                        '''
-                        #ERR! maybe order?
-                        #ProcessUserPosition	0x04
-                        response = bytes([
-                        0xAA, 
-                        0x00, 0x09, 
-                        0x04,
-                        0x00, 0x01, 
-                        0x00, 0x01,  
-                        0x00, 0x01, 
-                        0x00, 0x01
-                        ])
-                        client_socket.sendall(response)
-                        print("SUserPositionPacket 데이터를 서버응답으로 보냈습니다.")
-                        '''
                         
                         #ProcessMoveHumanAck? 0x06
                         
                         #ProcessDrawObjects? 0x07
-                        
-                        
                         
                         
                         #ProcessEffect?? 0x29
@@ -314,7 +328,7 @@ def create_server():
                         
                         #ProcessFieldMap? 0x2e
                          
-                        #ProcessPutHumanObject?? 0x33
+                       
                         
                         #ProcessObjectInfoReply?? 0x34
                         
