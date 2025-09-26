@@ -122,3 +122,21 @@ assemblyFF 05 D4 6C 62 00       (INC dword ptr [626CD4h])
 
  temp\\temp02281004 (fix!!!) -> using ProcessTempFiles
  temp\\temp0, temp\\temp1, ... (custom patch!)
+
+
+
+
+
+struct SDrawObjectsPacket {
+    short objectCount;          // +0x24: 객체 개수
+    ObjectData objects[];       // +0x28: 객체 배열
+}
+
+struct ObjectData {
+    short x, y;                 // 좌표
+    byte objectType;            // 객체 타입 (0x01=몬스터, 0x0e=NPC 등)
+    uint objectID;              // 고유 ID
+    short spriteID;             // 스프라이트/모델 ID
+    byte level;                 // 레벨 (몬스터의 경우)
+    // 기타 속성들...
+}

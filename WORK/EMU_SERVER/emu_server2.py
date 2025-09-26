@@ -1,7 +1,7 @@
 import socket
 #inrealserver
 def create_server():
-    host = '192.168.0.15'  # 서버 주소
+    host = '192.168.0.232'  # 서버 주소
     port = 1511            # 포트 번호
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,7 +82,8 @@ def create_server():
                         #0x03 type
                         # AA 00 xx 03 XX XX XX XX(ip) YY YY(port) dat2len dat2
                         response = bytes([
-                        0xAA ,0x00 ,0x08 ,0x03, 0x0F, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
+                        #0xAA ,0x00 ,0x08 ,0x03, 0x0F, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
+                        0xAA ,0x00 ,0x08 ,0x03, 0xE8, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
                         ])
                         client_socket.sendall(response)
                         print("ProcessTransferServer 데이터를 서버응답으로 보냈습니다.")       
@@ -102,19 +103,7 @@ def create_server():
                         #----------------MapPane----------------
                          
                          
-                         
-                        #ProcessPutHumanObject?? 0x33
-                        response = bytes([
-                        0xAA, 
-                        0x00, 0x0X, 
-                        0x33, 
-                        0x01,
-                        #0x03,
-                        ])
-                        client_socket.sendall(response)
-                        print("SPutHumanObject 데이터를 서버응답으로 보냈습니다.")
-                         
-                         
+                        
                          
                         #ProcessUserAppearance? 0x05
                         #OK!!!(UI Apply! pos:555,555)
@@ -149,6 +138,53 @@ def create_server():
                         client_socket.sendall(response)
                         print("SUserAppearance 데이터를 서버응답으로 보냈습니다.")
                         
+                        
+                        #ProcessPutHumanObject?? 0x33
+                        #OK!!! UI?
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x3D, 
+                        0x33,
+                        
+                        0x00,0x01,#x
+                        0x00,0x01,#y
+                        0x01,#dir
+                        0x01,#?
+                        
+                        0x00,0x00,0x00,0x01,#id
+                        
+                        0x00,
+                        0x00,
+                        0x00,0x01,
+                        0x00,0x01,
+                        
+                        0x00,0x01,
+                        0x00,0x01,
+                        0x01,
+                        
+                        0x01,
+                        0x00,
+                        0x00,
+                        
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,0x00,0x00,0x00, #flag
+                        
+                        0x00,
+                        0x05, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6,
+                        0x05, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6,
+                        
+                        0x01,
+                        0x01,
+                        0x00,0x01,
+                        0x01,
+                        0x01
+                        ])
+                        client_socket.sendall(response)
+                        print("SPutHumanObject 데이터를 서버응답으로 보냈습니다.")
+                        
+                         
                         
                         #ProcessMessage? 0x0A
                         #OK!!!
@@ -261,14 +297,57 @@ def create_server():
                         print("SChangeHour 데이터를 서버응답으로 보냈습니다.")
                          
                          
-                        
-                        
+                        '''
+                        #ProcessDrawObjects? 0x07                         
                          
+                        response = bytes([
+                        0xAA, 
+                        0x00, 0x10, 
+                        0x07,
+                        
+                        0x00,0x01,#count
+                        
+                        0x03,0x00,#x
+                        0x03,0x00,#y 
+                        0x0E,#object type
+                        0x05,0x00,0x00,0x00, #object id
+                        0x00,0x00, #sprite ID(maybe .dat id? !!!!!!!
+                        0x00, #direction
+                        0x01 #Normap NPC
+                        
+                        
+                        #0x0d,
+                        #0x00,0x00,0x00,0x01, #object id
+                        #0x00,0x00, #sprite ID(maybe .dat id? !!!!!!! 
+                        #0x00,
+                        #0x00,
+                        #0x00,
+                        #0x00,
+                        #0x00,
+                        #0x05, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6
+                        
+                        #0x03,
+                        #0x01,0x00,0x00,0x00, #object id
+                        #0x00,0x01, #sprite ID(maybe .dat id? !!!!!!! 
+                        #0x00,
+                        #0x01,
+                        #0x01,
+                        #0x01,
+                        #0x01,
+                        #0x01,
+                        #0x05, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6
+                        
+                        ])
+                        client_socket.sendall(response)
+                        print("SDrawObjects 데이터를 서버응답으로 보냈습니다.")
+                        '''
+                        #ProcessAddInventory? F
+                        
                         
                         
                         #ProcessRemoveObjects? E
                         
-                        #ProcessAddInventory? F
+                       
                         
                         #ProcessRemoveInventory? 0x10
                         
@@ -300,7 +379,7 @@ def create_server():
                         0x01,
                         0x01,
                         0x01,
-                        0x01, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x01,
                         0x0A, 0xC7, 0xEC, 0xB1, 0xD7, 0xB3, 0xD7, 0xC0, 0xCC, 0xBE, 0xC6,
                         0x00, 0x00, 0x00, 0x01,
                         0x00, 0x01,
@@ -317,7 +396,7 @@ def create_server():
                         
                         #ProcessMoveHumanAck? 0x06
                         
-                        #ProcessDrawObjects? 0x07
+                        
                         
                         
                         #ProcessEffect?? 0x29

@@ -11,4 +11,8 @@ if %errorLevel% neq 0 (
 cd /d "%~dp0"
 echo currunt path: %CD%
 
+:loop
 python emu_server2.py
+echo restart after 5sec...
+timeout /t 5
+goto loop

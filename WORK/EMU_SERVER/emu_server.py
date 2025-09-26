@@ -1,7 +1,7 @@
 import socket
 
 def create_server():
-    host = '192.168.0.15'  # 서버 주소
+    host = '192.168.0.232'  # 서버 주소
     port = 1510            # 포트 번호
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,7 +74,7 @@ def create_server():
                         response = bytes([
                             #0xAA, 0x00, 0x14, 0x00, 0x00, 0x00, 0x3B, 0x41, 0x4B,0x01, 0x0C,
                             0xAA, 0x00, 0x14, 0x00, 0x00, 0x00, 0x47, 0x41, 0x4B,0x01, 0x0C,
-                            *b'192.168.0.15'
+                            *b'192.168.0.232'
                         ])
                         
                         client_socket.sendall(response)
@@ -207,7 +207,8 @@ def create_server():
                         #0x03 type
                         # AA 00 xx 03 XX XX XX XX(ip) YY YY(port) dat2len dat2
                         response = bytes([
-                        0xAA ,0x00 ,0x08 ,0x03, 0x0F, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
+                        #0xAA ,0x00 ,0x08 ,0x03, 0x0F, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
+                        0xAA ,0x00 ,0x08 ,0x03, 0xE8, 0x00 ,0xA8 ,0xC0 ,0x05 ,0xE7 ,0x00
                         ])
                         client_socket.sendall(response)
                         print("ProcessTransferServer 데이터를 서버응답으로 보냈습니다.")  
